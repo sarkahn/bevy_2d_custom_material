@@ -1,0 +1,10 @@
+[package]
+name = "bevy_2d_mesh_example"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { git = "https://github.com/Davier/bevy", branch = "mesh2d", default-features = false, features = ["render", "png", "bevy_winit"] }
+bitflags = "1.2"
