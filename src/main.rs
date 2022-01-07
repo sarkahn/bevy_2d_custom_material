@@ -46,14 +46,14 @@ fn spawn_custom_material(
     ];
     mesh.set_attribute(Mesh::ATTRIBUTE_UV_0, uv);
 
-    let normals = vec![[0.0,0.0,-1.0]; 4];
-    mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
+    // let normals = vec![[0.0,0.0,-1.0]; 4];
+    // mesh.set_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
 
     let mesh = Mesh2dHandle(meshes.add(mesh));
 
     let material = materials.add(CustomMaterial {
         color: Color::BLUE,
-        texture: Some(asset_server.load("alien.png")),
+        texture: None,//Some(asset_server.load("alien.png")),
     });
 
     // We can now spawn the entities for the star and the camera,

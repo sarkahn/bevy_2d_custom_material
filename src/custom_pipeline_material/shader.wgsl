@@ -21,14 +21,34 @@ var texture_sampler: sampler;
 [[group(2), binding(0)]]
 var<uniform> mesh: Mesh2d;
 
+// The structure of the vertex buffer is as specified in `specialize()`
+struct Vertex {
+    [[location(0)]] position: vec3<f32>;
+    [[location(1)]] uv: vec2<f32>;
+};
+
+struct VertexOutput {
+    [[builtin(position)]] clip_position: vec4<f32>;
+    [[location(0)]] world_position: vec4<f32>;
+    [[location(1)]] uv: vec2<f32>;
+};
+
+/// Entry point for the vertex shader
+[[stage(vertex)]]
+fn vertex(vertex: Vertex) -> VertexOutput {
+    var out: VertexOutput;
+    out.world_position = mesh.model * vec4<f32>(vertex.position, 1.0);
+    // Project the world position of the mesh into screen position
+    out.clip_position = view.view_proj * out.world_position;
+    out.uv = vertex.uv;
+
+    return out;
+}
+
 struct FragmentInput {
     [[builtin(front_facing)]] is_front: bool;
     [[location(0)]] world_position: vec4<f32>;
-    [[location(1)]] world_normal: vec3<f32>;
-    [[location(2)]] uv: vec2<f32>;
-#ifdef VERTEX_TANGENTS
-    [[location(3)]] world_tangent: vec4<f32>;
-#endif
+    [[location(1)]] uv: vec2<f32>;
 };
 
 [[stage(fragment)]]

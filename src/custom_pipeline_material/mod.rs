@@ -180,8 +180,12 @@ impl RenderAsset for CustomMaterial {
     }
 }
 
-impl Material2d for CustomMaterial {
+impl SpecializedMaterial2d for CustomMaterial {
     fn fragment_shader(_asset_server: &AssetServer) -> Option<Handle<Shader>> {
+        Some(CUSTOM_MATERIAL_SHADER_HANDLE.typed())
+    }
+
+    fn vertex_shader(asset_server: &AssetServer) -> Option<Handle<Shader>> {
         Some(CUSTOM_MATERIAL_SHADER_HANDLE.typed())
     }
 
@@ -230,15 +234,40 @@ impl Material2d for CustomMaterial {
         })
     }
 
-    // type Key =  ();
+    type Key =  ();
 
-    // fn key(material: &<Self as RenderAsset>::PreparedAsset) -> Self::Key {
-    //     ()
-    // }
+    fn key(material: &<Self as RenderAsset>::PreparedAsset) -> Self::Key {
+        ()
+    }
 
-    // fn specialize(key: Self::Key, descriptor: &mut RenderPipelineDescriptor) {
-        
-    // }
+    fn specialize(key: Self::Key, descriptor: &mut RenderPipelineDescriptor) {
+        let vertex_attributes = vec![
+            // Position
+            VertexAttribute {
+                format: VertexFormat::Float32x3,
+                // this offset is the size of the color attribute, which is stored first
+                offset: 0,
+                // position is available at location 0 in the shader
+                shader_location: 0,
+            },
+            // UV
+            VertexAttribute {
+                format: VertexFormat::Float32x2,
+                offset: 12,
+                shader_location: 1,
+            },
+        ];
+        // This is the sum of the size of position and color attributes (12 + 16 = 28)
+        let vertex_array_stride = 20;
+
+        let buffers = vec![VertexBufferLayout {
+            array_stride: vertex_array_stride,
+            step_mode: VertexStepMode::Vertex,
+            attributes: vertex_attributes,
+        }];
+
+        descriptor.vertex.buffers = buffers;
+    }
 }
 
 /// A component bundle for entities with a [`Mesh2dHandle`](crate::Mesh2dHandle) and a [`ColorMaterial`].
