@@ -236,29 +236,37 @@ impl SpecializedMaterial2d for CustomMaterial {
 
     type Key =  ();
 
-    fn key(material: &<Self as RenderAsset>::PreparedAsset) -> Self::Key {
+    fn key(_material: &<Self as RenderAsset>::PreparedAsset) -> Self::Key {
         ()
     }
 
-    fn specialize(key: Self::Key, descriptor: &mut RenderPipelineDescriptor) {
+    fn specialize(_key: Self::Key, descriptor: &mut RenderPipelineDescriptor) {
         let vertex_attributes = vec![
-            // Position
+            // Color
             VertexAttribute {
-                format: VertexFormat::Float32x3,
+                format: VertexFormat::Float32x4,
                 // this offset is the size of the color attribute, which is stored first
                 offset: 0,
                 // position is available at location 0 in the shader
                 shader_location: 0,
             },
+            // Position
+            VertexAttribute {
+                format: VertexFormat::Float32x3,
+                // this offset is the size of the color attribute, which is stored first
+                offset: 16,
+                // position is available at location 0 in the shader
+                shader_location: 1,
+            },
             // UV
             VertexAttribute {
                 format: VertexFormat::Float32x2,
-                offset: 12,
-                shader_location: 1,
+                offset: 28,
+                shader_location: 2,
             },
         ];
-        // This is the sum of the size of position and color attributes (12 + 16 = 28)
-        let vertex_array_stride = 20;
+        // Color + Pos + Uv
+        let vertex_array_stride = 16 + 12 + 8;
 
         let buffers = vec![VertexBufferLayout {
             array_stride: vertex_array_stride,
